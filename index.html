@@ -1,4 +1,358 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Scontrini">
+<title>Scanner Scontrini</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f3; min-height: 100vh; padding: 1.25rem 1rem; }
+h1 { font-size: 22px; font-weight: 600; color: #111; margin-bottom: 4px; }
+.subtitle { font-size: 13px; color: #888; margin-bottom: 1.5rem; }
+.month-selector select { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 10px; background: #fff; color: #111; font-size: 15px; margin-bottom: 1.25rem; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; }
+.stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 1.25rem; }
+.stat { background: #ebebeb; border-radius: 10px; padding: 12px; }
+.stat-label { font-size: 12px; color: #888; margin-bottom: 4px; }
+.stat-value { font-size: 22px; font-weight: 600; color: #111; }
+.btn-scan { width: 100%; padding: 16px; background: #fff; border: 1px solid #ddd; border-radius: 14px; font-size: 16px; font-weight: 500; color: #111; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 1.25rem; -webkit-tap-highlight-color: transparent; }
+.btn-scan:active { background: #f0f0f0; }
+.receipts-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.receipts-title { font-size: 14px; font-weight: 500; color: #888; }
+.btn-export { padding: 8px 14px; background: #fff; border: 1px solid #ddd; border-radius: 10px; font-size: 13px; color: #111; cursor: pointer; display: flex; align-items: center; gap: 6px; -webkit-tap-highlight-color: transparent; }
+.btn-export:active { background: #f0f0f0; }
+.btn-export:disabled { opacity: 0.4; }
+.receipts-list { display: flex; flex-direction: column; gap: 10px; }
+.receipt-card { background: #fff; border: 1px solid #e8e8e8; border-radius: 14px; padding: 12px; display: flex; align-items: center; gap: 12px; }
+.receipt-thumb { width: 54px; height: 54px; border-radius: 8px; object-fit: cover; border: 1px solid #eee; flex-shrink: 0; cursor: pointer; }
+.receipt-info { flex: 1; min-width: 0; }
+.receipt-name { font-size: 14px; font-weight: 500; color: #111; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.receipt-date { font-size: 12px; color: #888; margin-top: 3px; }
+.receipt-del { background: none; border: none; cursor: pointer; color: #aaa; padding: 6px; flex-shrink: 0; -webkit-tap-highlight-color: transparent; }
+.empty { text-align: center; padding: 3rem 1rem; color: #aaa; font-size: 14px; line-height: 1.7; }
+#fileInput { display: none; }
+.toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); background: #222; color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 13px; opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; z-index: 999; }
+.toast.show { opacity: 1; }
 
+/* Scanner overlay */
+.scanner-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 100; flex-direction: column; }
+.scanner-overlay.active { display: flex; }
+.scanner-video { width: 100%; flex: 1; object-fit: cover; }
+.scanner-ui { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; }
+.scanner-frame { width: 78%; aspect-ratio: 0.65; border: 2.5px solid #fff; border-radius: 12px; box-shadow: 0 0 0 9999px rgba(0,0,0,0.55); }
+.scanner-corners span { position: absolute; width: 22px; height: 22px; border-color: #fff; border-style: solid; border-width: 0; }
+.scanner-hint { position: absolute; bottom: 110px; color: #fff; font-size: 13px; opacity: 0.8; text-align: center; padding: 0 2rem; }
+.scanner-actions { position: absolute; bottom: 0; left: 0; right: 0; padding: 1.25rem 1.5rem 2.5rem; display: flex; align-items: center; justify-content: space-between; background: linear-gradient(transparent, rgba(0,0,0,0.7)); pointer-events: all; }
+.btn-capture { width: 68px; height: 68px; border-radius: 50%; background: #fff; border: 4px solid rgba(255,255,255,0.5); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.btn-capture:active { transform: scale(0.94); }
+.btn-cancel { color: #fff; font-size: 15px; background: none; border: none; cursor: pointer; padding: 8px; -webkit-tap-highlight-color: transparent; }
+.btn-gallery { color: #fff; font-size: 13px; background: none; border: 1px solid rgba(255,255,255,0.5); border-radius: 8px; cursor: pointer; padding: 8px 12px; -webkit-tap-highlight-color: transparent; }
+
+/* Preview/edit overlay */
+.preview-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 200; flex-direction: column; }
+.preview-overlay.active { display: flex; }
+.preview-canvas-wrap { flex: 1; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+.preview-canvas-wrap canvas { max-width: 100%; max-height: 100%; border-radius: 8px; }
+.preview-controls { padding: 1rem 1.5rem 2.5rem; background: rgba(0,0,0,0.8); }
+.preview-filters { display: flex; gap: 10px; margin-bottom: 1rem; overflow-x: auto; padding-bottom: 4px; }
+.filter-btn { flex-shrink: 0; padding: 7px 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.3); background: none; color: #fff; font-size: 13px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.filter-btn.active { background: #fff; color: #111; }
+.preview-name { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: #fff; font-size: 15px; margin-bottom: 1rem; }
+.preview-name::placeholder { color: rgba(255,255,255,0.4); }
+.preview-actions { display: flex; gap: 10px; }
+.btn-discard { flex: 1; padding: 13px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.3); background: none; color: #fff; font-size: 15px; cursor: pointer; }
+.btn-save { flex: 2; padding: 13px; border-radius: 12px; border: none; background: #fff; color: #111; font-size: 15px; font-weight: 600; cursor: pointer; }
+
+/* Fullscreen preview */
+.fullscreen-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 300; align-items: center; justify-content: center; }
+.fullscreen-overlay.active { display: flex; }
+.fullscreen-overlay img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.fullscreen-close { position: absolute; top: 1.5rem; right: 1.5rem; background: rgba(0,0,0,0.5); border: none; color: #fff; font-size: 22px; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+</style>
+</head>
+<body>
+
+<h1>Scanner Scontrini</h1>
+<p class="subtitle">Organizza i tuoi scontrini per mese</p>
+
+<div class="month-selector">
+  <select id="monthSel"></select>
+</div>
+<div class="stats">
+  <div class="stat"><div class="stat-label">Scontrini</div><div class="stat-value" id="countVal">0</div></div>
+  <div class="stat"><div class="stat-label">Mese</div><div class="stat-value" id="monthLabel">—</div></div>
+</div>
+
+<button class="btn-scan" onclick="openScanner()">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="7 3 3 3 3 7"/><polyline points="17 3 21 3 21 7"/>
+    <polyline points="7 21 3 21 3 17"/><polyline points="17 21 21 21 21 17"/>
+    <line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
+  </svg>
+  Scansiona scontrino
+</button>
+<input type="file" id="fileInput" accept="image/*" onchange="handleGallery(this.files)">
+
+<div class="receipts-header">
+  <span class="receipts-title">Scontrini del mese</span>
+  <button class="btn-export" id="exportBtn" onclick="exportPDF()" disabled>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+      <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+    </svg>
+    Esporta PDF
+  </button>
+</div>
+<div class="receipts-list" id="receiptsList"></div>
+
+<!-- Scanner -->
+<div class="scanner-overlay" id="scannerOverlay">
+  <video id="scannerVideo" class="scanner-video" autoplay playsinline muted></video>
+  <div class="scanner-ui">
+    <div class="scanner-frame"></div>
+  </div>
+  <p class="scanner-hint">Inquadra lo scontrino nel riquadro</p>
+  <div class="scanner-actions">
+    <button class="btn-cancel" onclick="closeScanner()">Annulla</button>
+    <button class="btn-capture" onclick="captureFrame()"></button>
+    <button class="btn-gallery" onclick="document.getElementById('fileInput').click()">Galleria</button>
+  </div>
+</div>
+
+<!-- Preview/edit -->
+<div class="preview-overlay" id="previewOverlay">
+  <div class="preview-canvas-wrap">
+    <canvas id="previewCanvas"></canvas>
+  </div>
+  <div class="preview-controls">
+    <div class="preview-filters">
+      <button class="filter-btn active" onclick="applyFilter('auto')" id="f-auto">Auto</button>
+      <button class="filter-btn" onclick="applyFilter('bw')" id="f-bw">B&N</button>
+      <button class="filter-btn" onclick="applyFilter('contrast')" id="f-contrast">Contrasto</button>
+      <button class="filter-btn" onclick="applyFilter('original')" id="f-original">Originale</button>
+    </div>
+    <input class="preview-name" id="previewName" type="text" placeholder="Nome scontrino (opzionale)">
+    <div class="preview-actions">
+      <button class="btn-discard" onclick="discardPreview()">Scarta</button>
+      <button class="btn-save" onclick="saveReceipt()">Salva</button>
+    </div>
+  </div>
+</div>
+
+<!-- Fullscreen -->
+<div class="fullscreen-overlay" id="fullscreenOverlay" onclick="closeFullscreen()">
+  <img id="fullscreenImg" src="" alt="scontrino">
+  <button class="fullscreen-close" onclick="closeFullscreen()">✕</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const MONTHS = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+let receipts = [], selMonth, selYear, stream = null, rawImageData = null, currentFilter = 'auto';
+
+function saveReceipts() { try { localStorage.setItem('scontrini', JSON.stringify(receipts)); } catch(e) {} }
+function loadReceipts() { try { const d = localStorage.getItem('scontrini'); if (d) receipts = JSON.parse(d); } catch(e) { receipts = []; } }
+
+function initMonthSel() {
+  const sel = document.getElementById('monthSel');
+  const now = new Date();
+  selMonth = now.getMonth(); selYear = now.getFullYear();
+  for (let i = 0; i < 12; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const opt = document.createElement('option');
+    opt.value = `${d.getFullYear()}-${d.getMonth()}`;
+    opt.textContent = `${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+    if (i === 0) opt.selected = true;
+    sel.appendChild(opt);
+  }
+  sel.addEventListener('change', () => { const [y,m] = sel.value.split('-').map(Number); selYear=y; selMonth=m; render(); });
+}
+
+async function openScanner() {
+  const overlay = document.getElementById('scannerOverlay');
+  overlay.classList.add('active');
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } } });
+    document.getElementById('scannerVideo').srcObject = stream;
+  } catch(e) {
+    overlay.classList.remove('active');
+    document.getElementById('fileInput').click();
+  }
+}
+
+function closeScanner() {
+  if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+  document.getElementById('scannerOverlay').classList.remove('active');
+}
+
+function captureFrame() {
+  const video = document.getElementById('scannerVideo');
+  const c = document.createElement('canvas');
+  c.width = video.videoWidth; c.height = video.videoHeight;
+  c.getContext('2d').drawImage(video, 0, 0);
+  rawImageData = c.toDataURL('image/jpeg', 0.95);
+  closeScanner();
+  openPreview(rawImageData);
+}
+
+function handleGallery(files) {
+  if (!files.length) return;
+  const reader = new FileReader();
+  reader.onload = e => { rawImageData = e.target.result; openPreview(rawImageData); };
+  reader.readAsDataURL(files[0]);
+  document.getElementById('fileInput').value = '';
+}
+
+function openPreview(dataUrl) {
+  currentFilter = 'auto';
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('f-auto').classList.add('active');
+  document.getElementById('previewName').value = '';
+  document.getElementById('previewOverlay').classList.add('active');
+  const img = new Image();
+  img.onload = () => { renderFilter(img, 'auto'); };
+  img.src = dataUrl;
+}
+
+function renderFilter(imgOrSrc, filter) {
+  const canvas = document.getElementById('previewCanvas');
+  const img = imgOrSrc instanceof HTMLImageElement ? imgOrSrc : null;
+  const doRender = (image) => {
+    const maxW = window.innerWidth - 32, maxH = window.innerHeight * 0.55;
+    let w = image.naturalWidth, h = image.naturalHeight;
+    const ratio = Math.min(maxW / w, maxH / h, 1);
+    canvas.width = w; canvas.height = h;
+    canvas.style.width = Math.round(w * ratio) + 'px';
+    canvas.style.height = Math.round(h * ratio) + 'px';
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(image, 0, 0);
+    if (filter === 'original') return;
+    const id = ctx.getImageData(0, 0, w, h);
+    const data = id.data;
+    for (let i = 0; i < data.length; i += 4) {
+      let r = data[i], g = data[i+1], b = data[i+2];
+      if (filter === 'bw' || filter === 'auto') {
+        const gray = 0.299*r + 0.587*g + 0.114*b;
+        const v = filter === 'auto' ? Math.min(255, Math.max(0, (gray - 80) * 1.6 + 80)) : gray;
+        data[i] = data[i+1] = data[i+2] = v;
+      } else if (filter === 'contrast') {
+        const factor = 1.8;
+        data[i]   = Math.min(255, Math.max(0, factor*(r-128)+128));
+        data[i+1] = Math.min(255, Math.max(0, factor*(g-128)+128));
+        data[i+2] = Math.min(255, Math.max(0, factor*(b-128)+128));
+      }
+    }
+    ctx.putImageData(id, 0, 0);
+  };
+  if (img) { doRender(img); }
+  else { const i2 = new Image(); i2.onload = () => doRender(i2); i2.src = rawImageData; }
+}
+
+function applyFilter(filter) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('f-' + filter).classList.add('active');
+  renderFilter(null, filter);
+}
+
+function discardPreview() {
+  document.getElementById('previewOverlay').classList.remove('active');
+  rawImageData = null;
+}
+
+function saveReceipt() {
+  const canvas = document.getElementById('previewCanvas');
+  const name = document.getElementById('previewName').value.trim() || 'Scontrino';
+  const data = canvas.toDataURL('image/jpeg', 0.92);
+  receipts.push({ id: Date.now() + Math.random(), data, name, ts: Date.now(), month: new Date().getMonth(), year: new Date().getFullYear() });
+  saveReceipts();
+  document.getElementById('previewOverlay').classList.remove('active');
+  rawImageData = null;
+  render();
+  showToast('Scontrino salvato');
+}
+
+function filtered() { return receipts.filter(r => r.month===selMonth && r.year===selYear).sort((a,b) => a.ts-b.ts); }
+
+function render() {
+  const list = filtered();
+  document.getElementById('countVal').textContent = list.length;
+  document.getElementById('monthLabel').textContent = MONTHS[selMonth].slice(0,3);
+  document.getElementById('exportBtn').disabled = list.length === 0;
+  const container = document.getElementById('receiptsList');
+  if (!list.length) { container.innerHTML = `<div class="empty">Nessuno scontrino per questo mese.<br>Usa il pulsante sopra per scansionarne uno.</div>`; return; }
+  container.innerHTML = '';
+  list.forEach(r => {
+    const d = new Date(r.ts).toLocaleDateString('it-IT', {day:'2-digit', month:'long', year:'numeric'});
+    const card = document.createElement('div');
+    card.className = 'receipt-card';
+    card.innerHTML = `
+      <img class="receipt-thumb" src="${r.data}" alt="scontrino" onclick="openFullscreen('${r.id}')">
+      <div class="receipt-info">
+        <div class="receipt-name">${r.name}</div>
+        <div class="receipt-date">${d}</div>
+      </div>
+      <button class="receipt-del" onclick="deleteReceipt(${r.id})">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+          <path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/>
+        </svg>
+      </button>`;
+    container.appendChild(card);
+  });
+}
+
+function openFullscreen(id) {
+  const r = receipts.find(r => String(r.id) === String(id));
+  if (!r) return;
+  document.getElementById('fullscreenImg').src = r.data;
+  document.getElementById('fullscreenOverlay').classList.add('active');
+}
+function closeFullscreen() { document.getElementById('fullscreenOverlay').classList.remove('active'); }
+
+function deleteReceipt(id) { receipts = receipts.filter(r => r.id !== id); saveReceipts(); render(); showToast('Scontrino eliminato'); }
+
+async function exportPDF() {
+  const list = filtered();
+  if (!list.length) return;
+  const btn = document.getElementById('exportBtn');
+  btn.disabled = true; btn.textContent = 'Generazione…';
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const W = 210, margin = 15, H = 297;
+    doc.setFont('helvetica','bold'); doc.setFontSize(16);
+    doc.text(`Scontrini — ${MONTHS[selMonth]} ${selYear}`, margin, margin+5);
+    doc.setFontSize(10); doc.setFont('helvetica','normal'); doc.setTextColor(120);
+    doc.text(`Totale: ${list.length} scontrino/i`, margin, margin+12); doc.setTextColor(0);
+    for (let i = 0; i < list.length; i++) {
+      const r = list[i];
+      const d = new Date(r.ts).toLocaleDateString('it-IT', {day:'2-digit', month:'long', year:'numeric'});
+      if (i > 0) { doc.addPage(); }
+      let y = margin + (i===0 ? 22 : 0);
+      doc.setFontSize(11); doc.setFont('helvetica','bold');
+      doc.text(`${i+1}. ${r.name}`, margin, y);
+      doc.setFontSize(9); doc.setFont('helvetica','normal');
+      doc.setTextColor(100); doc.text(d, margin, y+6); doc.setTextColor(0);
+      doc.addImage(r.data, 'JPEG', margin, y+12, W-margin*2, H-y-margin-16, '', 'FAST');
+    }
+    doc.save(`scontrini_${MONTHS[selMonth].toLowerCase()}_${selYear}.pdf`);
+    showToast('PDF esportato');
+  } catch(e) { showToast('Errore durante l\'esportazione'); }
+  btn.disabled = false;
+  btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Esporta PDF`;
+}
+
+function showToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
+
+loadReceipts(); initMonthSel(); render();
+</script>
+</body>
+</html>
 <!DOCTYPE html>
 <html lang="it">
 <head>
