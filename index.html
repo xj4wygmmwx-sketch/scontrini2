@@ -326,28 +326,34 @@ function handleGallery(files){
 let cs={x:0,y:0,w:0,h:0,iw:0,ih:0,scale:1,offX:0,offY:0},dragMode=null,dragStart={};
 
 function autoDetectCrop(imgEl, dw, dh, scale){
-  // Draw image to temp canvas and detect document edges
+  const sw=Math.min(imgEl.naturalWidth,600);
+  const sh=Math.round(imgEl.naturalHeight*(sw/imgEl.naturalWidth));
   const c=document.createElement('canvas');
-  const sw=Math.min(dw,400), sh=Math.round(dh*(sw/dw));
   c.width=sw; c.height=sh;
   const ctx=c.getContext('2d');
   ctx.drawImage(imgEl,0,0,sw,sh);
   const data=ctx.getImageData(0,0,sw,sh).data;
-  // Find bounding box of non-white content
-  let minX=sw,maxX=0,minY=sh,maxY=0;
-  const thresh=240;
+  // Find average brightness to set adaptive threshold
+  let total=0;
+  for(let i=0;i<data.length;i+=4) total+=(data[i]+data[i+1]+data[i+2])/3;
+  const avg=total/(sw*sh);
+  const thresh=Math.min(avg*0.85, 230);
+  let minX=sw,maxX=0,minY=sh,maxY=0,found=false;
   for(let y=0;y<sh;y++){
     for(let x=0;x<sw;x++){
       const i=(y*sw+x)*4;
-      if(data[i]<thresh||data[i+1]<thresh||data[i+2]<thresh){
+      const bright=(data[i]+data[i+1]+data[i+2])/3;
+      if(bright<thresh){
+        found=true;
         if(x<minX)minX=x; if(x>maxX)maxX=x;
         if(y<minY)minY=y; if(y>maxY)maxY=y;
       }
     }
   }
-  // Add small padding and scale back to display coords
-  const pad=8, ratio=dw/sw;
-  return {
+  if(!found||maxX-minX<sw*0.1||maxY-minY<sh*0.1)
+    return{x:0,y:0,w:dw,h:dh}; // fallback: use full image
+  const pad=12, ratio=dw/sw;
+  return{
     x:Math.max(0,(minX-pad)*ratio),
     y:Math.max(0,(minY-pad)*ratio),
     w:Math.min(dw,(maxX-minX+pad*2)*ratio),
@@ -401,9 +407,15 @@ function setupCropDrag(){
 }
 function doCrop(){
   const img=document.getElementById('cropImg');
+  // Draw full image at natural resolution first to avoid Safari CSS-size issue
+  const full=document.createElement('canvas');
+  full.width=img.naturalWidth; full.height=img.naturalHeight;
+  full.getContext('2d').drawImage(img,0,0);
+  const sx=cs.x/cs.scale, sy=cs.y/cs.scale;
+  const sw=cs.w/cs.scale, sh=cs.h/cs.scale;
   const c=document.createElement('canvas');
-  c.width=cs.w/cs.scale;c.height=cs.h/cs.scale;
-  c.getContext('2d').drawImage(img,cs.x/cs.scale,cs.y/cs.scale,c.width,c.height,0,0,c.width,c.height);
+  c.width=sw; c.height=sh;
+  c.getContext('2d').drawImage(full,sx,sy,sw,sh,0,0,sw,sh);
   croppedImageData=c.toDataURL('image/jpeg',0.95);
   showPage('pagePreview');
   openPreview(croppedImageData);
