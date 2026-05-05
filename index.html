@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -536,7 +535,14 @@ async function doExportPDF(){
       let y=margin+(i===0?22:0);
       doc.setFontSize(11);doc.setFont('helvetica','bold');doc.text(`${i+1}. ${r.name}`,margin,y);
       doc.setFontSize(9);doc.setFont('helvetica','normal');doc.setTextColor(100);doc.text(d,margin,y+6);doc.setTextColor(0);
-      doc.addImage(r.data,'JPEG',margin,y+12,W-margin*2,H-y-margin-16,'','FAST');
+      // Use jsPDF to get real image dimensions
+      const props=doc.getImageProperties(r.data);
+      const iw=props.width, ih=props.height;
+      const availW=W-margin*2, availH=H-y-12-margin;
+      const ratio=Math.min(availW/iw, availH/ih);
+      const fw=iw*ratio, fh=ih*ratio;
+      const fx=margin+(availW-fw)/2;
+      doc.addImage(r.data,'JPEG',fx,y+12,fw,fh,'','FAST');
     }
     doc.save(`scontrini_${MONTHS[selMonth].toLowerCase()}_${selYear}.pdf`);
     showToast('✓ PDF scaricato');
