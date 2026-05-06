@@ -9,6 +9,7 @@
 <link id="appIcon" rel="apple-touch-icon">
 <title>Scontrini</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
 :root{
   --o:#F47C20;--od:#C45E0A;--ol:#FEF0E4;--om:#FAB97A;
@@ -276,7 +277,7 @@ input[type=file]{display:none;}
 </div>
 
 <input type="file" id="fileCam" accept="image/*" capture="environment">
-<input type="file" id="fileImport" accept="image/*" multiple>
+<input type="file" id="fileImport" accept="image/*,application/pdf">
 <div class="toast" id="toast"></div>
 
 <script>
@@ -342,9 +343,30 @@ document.getElementById('fileImport').addEventListener('change',function(){handl
 
 function handleFile(files){
   if(!files||!files.length)return;
-  const r=new FileReader();
-  r.onload=e=>{rawImageData=e.target.result;openCrop(rawImageData);};
-  r.readAsDataURL(files[0]);
+  const file=files[0];
+  if(file.type==='application/pdf'){
+    handlePDF(file);
+  } else {
+    const r=new FileReader();
+    r.onload=e=>{rawImageData=e.target.result;openCrop(rawImageData);};
+    r.readAsDataURL(file);
+  }
+}
+
+async function handlePDF(file){
+  showToast('Caricamento PDF…');
+  try{
+    pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    const arrayBuffer=await file.arrayBuffer();
+    const pdf=await pdfjsLib.getDocument({data:arrayBuffer}).promise;
+    const page=await pdf.getPage(1);
+    const viewport=page.getViewport({scale:3.0});
+    const canvas=document.createElement('canvas');
+    canvas.width=viewport.width;canvas.height=viewport.height;
+    await page.render({canvasContext:canvas.getContext('2d'),viewport}).promise;
+    rawImageData=canvas.toDataURL('image/jpeg',0.97);
+    openCrop(rawImageData);
+  }catch(e){showToast('Errore lettura PDF');}
 }
 
 // CROP
