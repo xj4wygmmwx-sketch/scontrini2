@@ -6,13 +6,13 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Scontrini">
+<link id="appIcon" rel="apple-touch-icon">
 <title>Scontrini</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 :root{
   --o:#F47C20;--od:#C45E0A;--ol:#FEF0E4;--om:#FAB97A;
-  --blue:#4A90D9;--bluel:#EBF4FF;--blued:#2D6BB0;
-  --green:#34C759;--greenl:#E8FAF0;--greend:#1E8A3A;
+  --green:#34C759;--greend:#1E8A3A;
   --bg:#F7F2EE;--card:#fff;--text:#1A1A1A;--text2:#999;
   --border:#EDE8E3;--r:20px;--rs:12px;
   --shadow:0 2px 16px rgba(0,0,0,0.07);
@@ -40,28 +40,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 /* STATS */
 .stats-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:1.25rem 1.25rem 0;}
-.stat-card{border-radius:var(--r);padding:18px;box-shadow:var(--shadow);position:relative;overflow:hidden;border:1px solid transparent;}
-.stat-card.orange{background:linear-gradient(135deg,#FFF5ED,#FFE8D0);border-color:#FAD0A8;}
-.stat-card.blue{background:linear-gradient(135deg,#EBF4FF,#D5E9FF);border-color:#A8CCEE;}
-.stat-card::after{content:'';position:absolute;bottom:-20px;right:-20px;width:80px;height:80px;border-radius:50%;opacity:0.4;}
-.stat-card.orange::after{background:#FAB97A;}
-.stat-card.blue::after{background:#89BADF;}
-.stat-label{font-size:12px;font-weight:600;margin-bottom:6px;opacity:0.7;}
-.stat-card.orange .stat-label{color:var(--od);}
-.stat-card.blue .stat-label{color:var(--blued);}
-.stat-val{font-size:32px;font-weight:800;line-height:1;position:relative;}
-.stat-card.orange .stat-val{color:var(--o);}
-.stat-card.blue .stat-val{color:var(--blue);}
+.stat-card{border-radius:var(--r);padding:18px;box-shadow:var(--shadow);position:relative;overflow:hidden;background:linear-gradient(135deg,#FFF5ED,#FFE8D0);border:1px solid #FAD0A8;}
+.stat-card::after{content:'';position:absolute;bottom:-20px;right:-20px;width:80px;height:80px;border-radius:50%;background:#FAB97A;opacity:0.4;}
+.stat-label{font-size:12px;font-weight:600;margin-bottom:6px;color:var(--od);opacity:0.8;}
+.stat-val{font-size:32px;font-weight:800;line-height:1;position:relative;color:var(--o);}
 
 /* ACTION BUTTONS */
 .actions-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:1.25rem 1.25rem 0;}
-.action-btn{padding:16px 14px;border:none;border-radius:var(--r);font-size:14px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;transition:transform 0.15s,box-shadow 0.15s;box-shadow:var(--shadow);}
+.action-btn{padding:18px 14px;border:none;border-radius:var(--r);font-size:15px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:10px;transition:transform 0.15s,box-shadow 0.15s;box-shadow:var(--shadow);}
 .action-btn:active{transform:scale(0.96);}
-.action-btn .btn-icon{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;}
-.action-btn.scan{background:linear-gradient(135deg,var(--o),var(--od));color:#fff;box-shadow:0 6px 20px rgba(244,124,32,0.4);}
-.action-btn.scan .btn-icon{background:rgba(255,255,255,0.2);}
-.action-btn.import{background:linear-gradient(135deg,var(--blue),var(--blued));color:#fff;box-shadow:0 6px 20px rgba(74,144,217,0.4);}
-.action-btn.import .btn-icon{background:rgba(255,255,255,0.2);}
+.action-btn .btn-icon{width:48px;height:48px;border-radius:16px;display:flex;align-items:center;justify-content:center;}
+.action-btn.acquire{background:linear-gradient(135deg,var(--o),var(--od));color:#fff;box-shadow:0 6px 20px rgba(244,124,32,0.4);}
+.action-btn.acquire .btn-icon{background:rgba(255,255,255,0.2);}
+.action-btn.import{background:var(--card);color:var(--text);border:1px solid var(--border);box-shadow:var(--shadow);}
+.action-btn.import .btn-icon{background:var(--ol);}
 
 /* SECTION */
 .section-header{display:flex;align-items:center;justify-content:space-between;padding:1.5rem 1.25rem 0.75rem;}
@@ -86,27 +78,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .empty-title{font-size:17px;font-weight:700;color:var(--text);margin-bottom:6px;}
 .empty-sub{font-size:14px;color:var(--text2);line-height:1.6;}
 
-/* SCANNER */
-#pageScanner{background:#000;}
-#pageScanner video{width:100%;height:100vh;object-fit:cover;display:block;}
-.scan-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;}
-.scan-frame{width:75%;aspect-ratio:0.6;position:relative;}
-.scan-frame::before{content:'';position:absolute;inset:0;border-radius:14px;box-shadow:0 0 0 9999px rgba(0,0,0,0.55);}
-.corner{position:absolute;width:28px;height:28px;}
-.corner.tl{top:-2px;left:-2px;}
-.corner.tr{top:-2px;right:-2px;transform:scaleX(-1);}
-.corner.bl{bottom:-2px;left:-2px;transform:scaleY(-1);}
-.corner.br{bottom:-2px;right:-2px;transform:scale(-1);}
-.scan-line{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--o),transparent);animation:scanLine 2s ease-in-out infinite;}
-@keyframes scanLine{0%{top:0;opacity:0;}10%{opacity:1;}90%{opacity:1;}100%{top:100%;opacity:0;}}
-.scan-hint{position:absolute;bottom:160px;left:0;right:0;text-align:center;color:rgba(255,255,255,0.75);font-size:13px;}
-.scan-bottom{position:absolute;bottom:0;left:0;right:0;padding:1rem 1.5rem 2.5rem;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(transparent,rgba(0,0,0,0.8));pointer-events:all;}
-.btn-txt{color:#fff;font-size:15px;background:none;border:none;cursor:pointer;padding:8px;}
-.capture-ring{width:76px;height:76px;border-radius:50%;border:3px solid rgba(255,255,255,0.5);display:flex;align-items:center;justify-content:center;cursor:pointer;}
-.capture-ring:active .capture-inner{transform:scale(0.88);}
-.capture-inner{width:58px;height:58px;border-radius:50%;background:var(--o);box-shadow:0 0 0 3px rgba(244,124,32,0.4);transition:transform 0.15s;}
-.scan-import-row{position:absolute;bottom:120px;left:0;right:0;display:flex;justify-content:center;gap:12px;pointer-events:all;}
-.scan-import-btn{display:flex;align-items:center;gap:8px;padding:10px 18px;border-radius:30px;border:1px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.12);color:#fff;font-size:13px;font-weight:600;cursor:pointer;backdrop-filter:blur(8px);}
+/* CONFIRM DIALOG */
+.confirm-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);}
+.confirm-overlay.active{display:flex;}
+.confirm-box{background:var(--card);border-radius:24px 24px 0 0;padding:1.5rem 1.25rem 2.5rem;width:100%;max-width:480px;}
+.confirm-title{font-size:17px;font-weight:700;color:var(--text);margin-bottom:6px;text-align:center;}
+.confirm-sub{font-size:14px;color:var(--text2);text-align:center;margin-bottom:1.5rem;}
+.confirm-actions{display:flex;flex-direction:column;gap:10px;}
+.btn-confirm-del{padding:15px;border-radius:var(--r);border:none;background:#FF3B30;color:#fff;font-size:16px;font-weight:700;cursor:pointer;}
+.btn-confirm-cancel{padding:15px;border-radius:var(--r);border:1px solid var(--border);background:var(--card);color:var(--text);font-size:16px;font-weight:600;cursor:pointer;}
 
 /* CROP */
 #pageCrop{background:#0A0A0A;}
@@ -161,8 +141,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #fullscreenImg{max-width:100%;max-height:100vh;object-fit:contain;}
 .fs-close{position:absolute;top:3rem;right:1.25rem;background:rgba(255,255,255,0.15);border:none;color:#fff;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;}
 
-#fileInput{display:none;}
-#fileInputGallery{display:none;}
+input[type=file]{display:none;}
 .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:10px 22px;border-radius:30px;font-size:13px;font-weight:500;opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap;z-index:9999;}
 .toast.show{opacity:1;}
 </style>
@@ -188,22 +167,29 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 
   <div class="stats-row">
-    <div class="stat-card orange"><div class="stat-label">Scontrini</div><div class="stat-val" id="countVal">0</div></div>
-    <div class="stat-card blue"><div class="stat-label">Mese</div><div class="stat-val" id="monthLabel">—</div></div>
+    <div class="stat-card"><div class="stat-label">Scontrini</div><div class="stat-val" id="countVal">0</div></div>
+    <div class="stat-card"><div class="stat-label">Mese</div><div class="stat-val" id="monthLabel">—</div></div>
   </div>
 
   <div class="actions-row">
-    <button class="action-btn scan" onclick="openScanner()">
+    <button class="action-btn acquire" onclick="document.getElementById('fileCam').click()">
       <div class="btn-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 3 3 3 3 7"/><polyline points="17 3 21 3 21 7"/><polyline points="7 21 3 21 3 17"/><polyline points="17 21 21 21 21 17"/></svg>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+          <circle cx="12" cy="13" r="4"/>
+        </svg>
       </div>
-      Scansiona
+      Acquisisci
     </button>
-    <button class="action-btn import" onclick="document.getElementById('fileInputGallery').click()">
+    <button class="action-btn import" onclick="document.getElementById('fileImport').click()">
       <div class="btn-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#F47C20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2"/>
+          <circle cx="8.5" cy="8.5" r="1.5"/>
+          <polyline points="21 15 16 10 5 21"/>
+        </svg>
       </div>
-      Importa
+      <span style="color:var(--text)">Importa</span>
     </button>
   </div>
 
@@ -215,36 +201,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </button>
   </div>
   <div class="list" id="receiptsList"></div>
-</div>
-
-<!-- SCANNER -->
-<div class="page hidden" id="pageScanner">
-  <video id="scannerVideo" autoplay playsinline muted></video>
-  <div class="scan-overlay">
-    <div class="scan-frame">
-      <div class="scan-line"></div>
-      <div class="corner tl"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M2 14V2h12" stroke="#F47C20" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <div class="corner tr"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M2 14V2h12" stroke="#F47C20" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <div class="corner bl"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M2 14V2h12" stroke="#F47C20" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <div class="corner br"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M2 14V2h12" stroke="#F47C20" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    </div>
-  </div>
-  <p class="scan-hint">Inquadra lo scontrino nel riquadro</p>
-  <div class="scan-import-row">
-    <button class="scan-import-btn" onclick="document.getElementById('fileInput').click()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-      Galleria
-    </button>
-    <button class="scan-import-btn" onclick="document.getElementById('fileInputGallery').click()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-      File
-    </button>
-  </div>
-  <div class="scan-bottom">
-    <button class="btn-txt" onclick="closeScanner()">Annulla</button>
-    <div class="capture-ring" onclick="captureFrame()"><div class="capture-inner"></div></div>
-    <div style="width:60px"></div>
-  </div>
 </div>
 
 <!-- CROP -->
@@ -307,14 +263,53 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <button class="fs-close" onclick="closePage('pageFullscreen')">✕</button>
 </div>
 
-<!-- file inputs -->
-<input type="file" id="fileInput" accept="image/*" capture="environment" onchange="handleGallery(this.files)">
-<input type="file" id="fileInputGallery" accept="image/*,application/pdf" multiple onchange="handleGallery(this.files)">
+<!-- CONFIRM DELETE -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="confirm-title">Elimina scontrino</div>
+    <div class="confirm-sub">Questa azione non può essere annullata.</div>
+    <div class="confirm-actions">
+      <button class="btn-confirm-del" id="confirmDelBtn">Elimina</button>
+      <button class="btn-confirm-cancel" onclick="closeConfirm()">Annulla</button>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="fileCam" accept="image/*" capture="environment">
+<input type="file" id="fileImport" accept="image/*" multiple>
 <div class="toast" id="toast"></div>
 
 <script>
 const MONTHS=['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
-let receipts=[],selMonth,selYear,stream=null,rawImageData=null,croppedImageData=null,currentFilter='auto';
+let receipts=[],selMonth,selYear,rawImageData=null,croppedImageData=null,pendingDeleteId=null;
+
+// Generate app icon via canvas
+(function(){
+  const c=document.createElement('canvas');c.width=180;c.height=180;
+  const ctx=c.getContext('2d');
+  // Background
+  const g=ctx.createLinearGradient(0,0,180,180);
+  g.addColorStop(0,'#F47C20');g.addColorStop(1,'#C8380A');
+  ctx.fillStyle=g;
+  ctx.beginPath();ctx.roundRect(0,0,180,180,36);ctx.fill();
+  // Receipt shape
+  ctx.fillStyle='rgba(255,255,255,0.95)';
+  ctx.beginPath();ctx.roundRect(44,24,92,120,8);ctx.fill();
+  // Zigzag bottom
+  ctx.fillStyle='rgba(255,255,255,0.95)';
+  const zy=144,zw=8;
+  for(let x=44;x<136;x+=zw*2){
+    ctx.beginPath();ctx.moveTo(x,zy);ctx.lineTo(x+zw,zy+10);ctx.lineTo(x+zw*2,zy);ctx.closePath();ctx.fill();
+  }
+  // Lines on receipt
+  ctx.fillStyle='rgba(200,90,10,0.25)';
+  [[54,44,72,6],[54,58,84,6],[54,72,60,6],[54,86,78,6],[54,100,50,6]].forEach(([x,y,w,h])=>{
+    ctx.beginPath();ctx.roundRect(x,y,w,h,3);ctx.fill();
+  });
+  // Camera icon overlay
+  ctx.fillStyle='rgba(255,255,255,0.0)';
+  document.getElementById('appIcon').href=c.toDataURL('image/png');
+})();
 
 function save(){try{localStorage.setItem('scontrini',JSON.stringify(receipts));}catch(e){}}
 function load(){try{const d=localStorage.getItem('scontrini');if(d)receipts=JSON.parse(d);}catch(e){receipts=[];}}
@@ -341,41 +336,21 @@ function initMonthSel(){
   sel.addEventListener('change',()=>{const[y,m]=sel.value.split('-').map(Number);selYear=y;selMonth=m;render();});
 }
 
-async function openScanner(){
-  showPage('pageScanner');
-  try{
-    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:4096},height:{ideal:4096}}});
-    document.getElementById('scannerVideo').srcObject=stream;
-  }catch(e){closePage('pageScanner');document.getElementById('fileInputGallery').click();}
-}
-function closeScanner(){
-  if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}
-  closePage('pageScanner');
-}
-function captureFrame(){
-  const v=document.getElementById('scannerVideo');
-  const c=document.createElement('canvas');
-  c.width=v.videoWidth;c.height=v.videoHeight;
-  c.getContext('2d').drawImage(v,0,0);
-  rawImageData=c.toDataURL('image/jpeg',0.97);
-  closeScanner();
-  openCrop(rawImageData);
-}
-function handleGallery(files){
-  if(!files.length)return;
-  const file=files[0];
+// File inputs
+document.getElementById('fileCam').addEventListener('change',function(){handleFile(this.files);this.value='';});
+document.getElementById('fileImport').addEventListener('change',function(){handleFile(this.files);this.value='';});
+
+function handleFile(files){
+  if(!files||!files.length)return;
   const r=new FileReader();
   r.onload=e=>{rawImageData=e.target.result;openCrop(rawImageData);};
-  r.readAsDataURL(file);
-  document.getElementById('fileInput').value='';
-  document.getElementById('fileInputGallery').value='';
-  if(stream)closeScanner();
+  r.readAsDataURL(files[0]);
 }
 
 // CROP
 let cs={x:0,y:0,w:0,h:0,iw:0,ih:0,scale:1,offX:0,offY:0},dragMode=null,dragStart={};
 
-function autoDetectCrop(imgEl,dw,dh,scale){
+function autoDetectCrop(imgEl,dw,dh){
   const sw=Math.min(imgEl.naturalWidth,600),sh=Math.round(imgEl.naturalHeight*(sw/imgEl.naturalWidth));
   const c=document.createElement('canvas');c.width=sw;c.height=sh;
   const ctx=c.getContext('2d');ctx.drawImage(imgEl,0,0,sw,sh);
@@ -401,7 +376,7 @@ function openCrop(dataUrl){
     const dw=iw*scale,dh=ih*scale;
     img.style.width=dw+'px';img.style.height=dh+'px';
     const offX=(ar.width-dw)/2,offY=(ar.height-dh)/2;
-    const auto=autoDetectCrop(img,dw,dh,scale);
+    const auto=autoDetectCrop(img,dw,dh);
     cs={x:auto.x,y:auto.y,w:auto.w,h:auto.h,iw:dw,ih:dh,scale,offX,offY};
     updateCropBox();
   };
@@ -446,7 +421,7 @@ function doCrop(){
 function skipCrop(){croppedImageData=rawImageData;showPage('pagePreview');openPreview(croppedImageData);}
 function goBackToCrop(){showPage('pageCrop');}
 
-// PREVIEW & FILTERS
+// PREVIEW
 function sharpen(ctx,w,h){
   const src=ctx.getImageData(0,0,w,h),dst=ctx.createImageData(w,h);
   const s=src.data,d=dst.data,k=[-1,-1,-1,-1,9,-1,-1,-1,-1];
@@ -458,7 +433,6 @@ function sharpen(ctx,w,h){
   ctx.putImageData(dst,0,0);
 }
 function openPreview(dataUrl){
-  currentFilter='auto';
   document.querySelectorAll('.filter-pill').forEach(b=>b.classList.remove('active'));
   document.getElementById('f-auto').classList.add('active');
   document.getElementById('previewName').value='';
@@ -488,7 +462,6 @@ function renderFilter(imgOrNull,filter){
   else{const i2=new Image();i2.onload=()=>doRender(i2);i2.src=croppedImageData||rawImageData;}
 }
 function applyFilter(f){
-  currentFilter=f;
   document.querySelectorAll('.filter-pill').forEach(b=>b.classList.remove('active'));
   document.getElementById('f-'+f).classList.add('active');
   renderFilter(null,f);
@@ -507,6 +480,23 @@ function saveReceipt(){
   render();showToast('✓ Scontrino salvato');
 }
 
+// CONFIRM DELETE
+function askDelete(id){
+  pendingDeleteId=id;
+  document.getElementById('confirmOverlay').classList.add('active');
+}
+function closeConfirm(){
+  pendingDeleteId=null;
+  document.getElementById('confirmOverlay').classList.remove('active');
+}
+document.getElementById('confirmDelBtn').onclick=function(){
+  if(pendingDeleteId!=null){
+    receipts=receipts.filter(r=>r.id!==pendingDeleteId);
+    save();render();showToast('Scontrino eliminato');
+  }
+  closeConfirm();
+};
+
 // RENDER
 function filtered(){return receipts.filter(r=>r.month===selMonth&&r.year===selYear).sort((a,b)=>a.ts-b.ts);}
 function render(){
@@ -516,7 +506,7 @@ function render(){
   document.getElementById('exportBtnSm').disabled=list.length===0;
   const c=document.getElementById('receiptsList');
   if(!list.length){
-    c.innerHTML=`<div class="empty-state"><div class="empty-circle">🧾</div><div class="empty-title">Nessuno scontrino</div><div class="empty-sub">Scansiona con la fotocamera<br>o importa dalla galleria.</div></div>`;
+    c.innerHTML=`<div class="empty-state"><div class="empty-circle">🧾</div><div class="empty-title">Nessuno scontrino</div><div class="empty-sub">Usa "Acquisisci" per fotografare<br>o "Importa" dalla galleria.</div></div>`;
     return;
   }
   c.innerHTML='';
@@ -526,13 +516,12 @@ function render(){
     card.innerHTML=`
       <img class="receipt-thumb" src="${r.data}" alt="" onclick="openFullscreen(${r.id})">
       <div class="receipt-info"><div class="receipt-name">${r.name}</div><div class="receipt-date">${d}</div></div>
-      <button class="receipt-del" onclick="deleteReceipt(${r.id})">
+      <button class="receipt-del" onclick="askDelete(${r.id})">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
       </button>`;
     c.appendChild(card);
   });
 }
-function deleteReceipt(id){receipts=receipts.filter(r=>r.id!==id);save();render();showToast('Scontrino eliminato');}
 
 // EXPORT
 function openExport(){
