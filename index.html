@@ -20,7 +20,6 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);min-height:100vh;overflow-x:hidden;}
-
 .page{position:fixed;inset:0;background:var(--bg);overflow-y:auto;transition:transform 0.35s cubic-bezier(.4,0,.2,1),opacity 0.35s;will-change:transform;}
 .page.hidden{transform:translateX(100%);opacity:0;pointer-events:none;}
 .page.slide-up{transform:translateY(100%);opacity:0;pointer-events:none;}
@@ -33,6 +32,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .hero-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;position:relative;}
 .hero-title{font-size:30px;font-weight:800;color:#fff;letter-spacing:-0.5px;}
 .hero-subtitle{font-size:13px;color:rgba(255,255,255,0.75);margin-top:3px;}
+.hero-version{font-size:10px;color:rgba(255,255,255,0.45);margin-top:4px;}
 .hero-avatar{width:46px;height:46px;background:rgba(255,255,255,0.2);border-radius:16px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);font-size:22px;}
 .month-pill{display:flex;align-items:center;background:rgba(255,255,255,0.18);border-radius:16px;padding:11px 16px;gap:10px;position:relative;backdrop-filter:blur(8px);}
 .month-pill select{background:none;border:none;color:#fff;font-size:15px;font-weight:600;appearance:none;-webkit-appearance:none;padding-right:22px;cursor:pointer;width:100%;}
@@ -46,20 +46,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .stat-label{font-size:12px;font-weight:600;margin-bottom:6px;color:var(--od);opacity:0.8;}
 .stat-val{font-size:32px;font-weight:800;line-height:1;position:relative;color:var(--o);}
 
-/* ACTION BUTTONS */
+/* ACTIONS */
 .actions-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:1.25rem 1.25rem 0;}
-.action-btn{padding:18px 14px;border:none;border-radius:var(--r);font-size:15px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:10px;transition:transform 0.15s,box-shadow 0.15s;box-shadow:var(--shadow);}
+.action-btn{padding:18px 14px;border:none;border-radius:var(--r);font-size:15px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:10px;transition:transform 0.15s;box-shadow:var(--shadow);}
 .action-btn:active{transform:scale(0.96);}
 .action-btn .btn-icon{width:48px;height:48px;border-radius:16px;display:flex;align-items:center;justify-content:center;}
 .action-btn.acquire{background:linear-gradient(135deg,var(--o),var(--od));color:#fff;box-shadow:0 6px 20px rgba(244,124,32,0.4);}
 .action-btn.acquire .btn-icon{background:rgba(255,255,255,0.2);}
-.action-btn.import{background:var(--card);color:var(--text);border:1px solid var(--border);box-shadow:var(--shadow);}
+.action-btn.import{background:var(--card);color:var(--text);border:1px solid var(--border);}
 .action-btn.import .btn-icon{background:var(--ol);}
 
 /* SECTION */
 .section-header{display:flex;align-items:center;justify-content:space-between;padding:1.5rem 1.25rem 0.75rem;}
 .section-title{font-size:17px;font-weight:800;color:var(--text);}
-.export-btn-sm{display:flex;align-items:center;gap:6px;padding:8px 14px;background:linear-gradient(135deg,var(--green),var(--greend));border:none;border-radius:30px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 4px 12px rgba(52,199,89,0.35);transition:transform 0.15s;}
+.export-btn-sm{display:flex;align-items:center;gap:6px;padding:8px 14px;background:linear-gradient(135deg,var(--green),var(--greend));border:none;border-radius:30px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 4px 12px rgba(52,199,89,0.35);}
 .export-btn-sm:active{transform:scale(0.96);}
 .export-btn-sm:disabled{opacity:0.35;pointer-events:none;box-shadow:none;background:#ccc;}
 
@@ -73,46 +73,44 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .receipt-name{font-size:15px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .receipt-date{font-size:12px;color:var(--text2);margin-top:3px;}
 .receipt-del{background:none;border:none;cursor:pointer;color:#ddd;padding:6px;}
-.receipt-del:active{color:#e55;}
 .empty-state{text-align:center;padding:3rem 1.5rem;}
 .empty-circle{width:80px;height:80px;background:var(--ol);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:32px;}
 .empty-title{font-size:17px;font-weight:700;color:var(--text);margin-bottom:6px;}
 .empty-sub{font-size:14px;color:var(--text2);line-height:1.6;}
 
-/* CONFIRM DIALOG */
+/* CONFIRM */
 .confirm-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);}
 .confirm-overlay.active{display:flex;}
 .confirm-box{background:var(--card);border-radius:24px 24px 0 0;padding:1.5rem 1.25rem 2.5rem;width:100%;max-width:480px;}
-.confirm-title{font-size:17px;font-weight:700;color:var(--text);margin-bottom:6px;text-align:center;}
+.confirm-title{font-size:17px;font-weight:700;text-align:center;margin-bottom:6px;}
 .confirm-sub{font-size:14px;color:var(--text2);text-align:center;margin-bottom:1.5rem;}
-.confirm-actions{display:flex;flex-direction:column;gap:10px;}
-.btn-confirm-del{padding:15px;border-radius:var(--r);border:none;background:#FF3B30;color:#fff;font-size:16px;font-weight:700;cursor:pointer;}
-.btn-confirm-cancel{padding:15px;border-radius:var(--r);border:1px solid var(--border);background:var(--card);color:var(--text);font-size:16px;font-weight:600;cursor:pointer;}
+.btn-confirm-del{width:100%;padding:15px;border-radius:var(--r);border:none;background:#FF3B30;color:#fff;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:10px;}
+.btn-confirm-cancel{width:100%;padding:15px;border-radius:var(--r);border:1px solid var(--border);background:var(--card);color:var(--text);font-size:16px;font-weight:600;cursor:pointer;}
 
-/* CROP */
+/* CROP - perspective */
 #pageCrop{background:#0A0A0A;}
 .dark-topbar{display:flex;align-items:center;justify-content:space-between;padding:3.5rem 1.25rem 1rem;}
 .dark-topbar span{color:#fff;font-size:17px;font-weight:700;}
 .dark-topbar button{color:rgba(255,255,255,0.55);background:none;border:none;font-size:14px;cursor:pointer;}
-.crop-canvas-area{flex:1;display:flex;align-items:center;justify-content:center;padding:0.5rem 1rem;position:relative;overflow:hidden;}
-#cropImg{max-width:100%;display:block;user-select:none;-webkit-user-select:none;}
-.crop-box{position:absolute;border:2px solid var(--o);}
-.crop-handle{position:absolute;width:24px;height:24px;background:var(--o);border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 2px 8px rgba(0,0,0,0.4);}
-.crop-handle.tr{top:0;right:0;transform:translate(50%,-50%);}
-.crop-handle.bl{bottom:0;left:0;transform:translate(-50%,50%);}
-.crop-handle.br{bottom:0;right:0;transform:translate(50%,50%);}
+.crop-canvas-area{flex:1;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+#cropImg{max-width:100%;max-height:100%;display:block;user-select:none;-webkit-user-select:none;pointer-events:none;}
+#cropSvg{position:absolute;top:0;left:0;width:100%;height:100%;overflow:visible;pointer-events:none;}
+.corner-handle{position:absolute;width:28px;height:28px;background:var(--o);border-radius:50%;border:3px solid #fff;transform:translate(-50%,-50%);cursor:move;box-shadow:0 2px 10px rgba(0,0,0,0.5);touch-action:none;z-index:10;}
 .dark-bottom{padding:1rem 1.25rem 2.5rem;display:flex;gap:10px;}
 .btn-secondary{flex:1;padding:15px;border-radius:var(--r);border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#fff;font-size:15px;cursor:pointer;}
 .btn-primary{flex:2;padding:15px;border-radius:var(--r);border:none;background:linear-gradient(135deg,var(--o),var(--od));color:#fff;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(244,124,32,0.4);}
 
 /* PREVIEW */
 #pagePreview{background:#0A0A0A;}
-#previewCanvas{max-width:100%;max-height:52vh;border-radius:12px;display:block;}
-.filters-wrap{padding:1rem 1.25rem 0;display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;}
-.filter-pill{flex-shrink:0;padding:8px 18px;border-radius:30px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6);font-size:13px;cursor:pointer;transition:all 0.2s;}
+#previewCanvas{max-width:100%;max-height:48vh;border-radius:12px;display:block;}
+.filters-wrap{padding:0.75rem 1.25rem 0;display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;}
+.filter-pill{flex-shrink:0;padding:7px 16px;border-radius:30px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6);font-size:13px;cursor:pointer;transition:all 0.2s;}
 .filter-pill.active{background:linear-gradient(135deg,var(--o),var(--od));border-color:var(--o);color:#fff;}
-.name-input{margin:1rem 1.25rem 0;width:calc(100% - 2.5rem);padding:14px 16px;border-radius:var(--rs);border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.07);color:#fff;font-size:15px;}
-.name-input::placeholder{color:rgba(255,255,255,0.3);}
+.preview-fields{padding:0.75rem 1.25rem 0;display:flex;flex-direction:column;gap:8px;}
+.field-select{width:100%;padding:13px 16px;border-radius:var(--rs);border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.07);color:#fff;font-size:15px;appearance:none;-webkit-appearance:none;}
+.field-select option{color:#111;background:#fff;}
+.field-input{width:100%;padding:13px 16px;border-radius:var(--rs);border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.07);color:#fff;font-size:15px;}
+.field-input::placeholder{color:rgba(255,255,255,0.3);}
 .preview-img-area{flex:1;display:flex;align-items:center;justify-content:center;padding:0 1rem;}
 
 /* EXPORT */
@@ -157,7 +155,7 @@ input[type=file]{display:none;}
       <div>
         <div class="hero-title">Scontrini</div>
         <div class="hero-subtitle">Archivia e gestisci le tue spese</div>
-        <div style="font-size:10px;color:rgba(255,255,255,0.45);margin-top:4px;">v1.8</div>
+        <div class="hero-version">v1.9</div>
       </div>
       <div class="hero-avatar">🧾</div>
     </div>
@@ -167,34 +165,24 @@ input[type=file]{display:none;}
       <svg class="month-pill-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
     </div>
   </div>
-
   <div class="stats-row">
     <div class="stat-card"><div class="stat-label">Scontrini</div><div class="stat-val" id="countVal">0</div></div>
     <div class="stat-card"><div class="stat-label">Mese</div><div class="stat-val" id="monthLabel">—</div></div>
   </div>
-
   <div class="actions-row">
     <button class="action-btn acquire" onclick="document.getElementById('fileCam').click()">
       <div class="btn-icon">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-          <circle cx="12" cy="13" r="4"/>
-        </svg>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
       </div>
       Acquisisci
     </button>
     <button class="action-btn import" onclick="document.getElementById('fileImport').click()">
       <div class="btn-icon">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#F47C20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="3" width="18" height="18" rx="2"/>
-          <circle cx="8.5" cy="8.5" r="1.5"/>
-          <polyline points="21 15 16 10 5 21"/>
-        </svg>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#F47C20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
       </div>
       <span style="color:var(--text)">Importa</span>
     </button>
   </div>
-
   <div class="section-header">
     <span class="section-title">Questo mese</span>
     <button class="export-btn-sm" id="exportBtnSm" onclick="openExport()" disabled>
@@ -210,22 +198,21 @@ input[type=file]{display:none;}
   <div class="dark-topbar"><span>Ritaglia</span><button onclick="skipCrop()">Salta ›</button></div>
   <div class="crop-canvas-area" id="cropArea">
     <img id="cropImg" src="" alt="" draggable="false">
-    <div class="crop-box" id="cropBox">
-      <div class="crop-handle tl" data-h="tl"></div>
-      <div class="crop-handle tr" data-h="tr"></div>
-      <div class="crop-handle bl" data-h="bl"></div>
-      <div class="crop-handle br" data-h="br"></div>
-    </div>
+    <svg id="cropSvg"><polygon id="cropPoly" fill="rgba(244,124,32,0.1)" stroke="#F47C20" stroke-width="2"/></svg>
+    <div class="corner-handle" id="ch-tl" data-c="tl"></div>
+    <div class="corner-handle" id="ch-tr" data-c="tr"></div>
+    <div class="corner-handle" id="ch-br" data-c="br"></div>
+    <div class="corner-handle" id="ch-bl" data-c="bl"></div>
   </div>
   <div class="dark-bottom">
     <button class="btn-secondary" onclick="skipCrop()">Usa originale</button>
-    <button class="btn-primary" onclick="doCrop()">Ritaglia</button>
+    <button class="btn-primary" onclick="doCrop()">Applica</button>
   </div>
 </div>
 
 <!-- PREVIEW -->
 <div class="page slide-up" id="pagePreview" style="display:flex;flex-direction:column;">
-  <div class="dark-topbar"><span>Anteprima</span><button onclick="goBackToCrop()">‹ Ritaglia</button></div>
+  <div class="dark-topbar"><span>Anteprima</span><button onclick="goBackToCrop()">‹ Indietro</button></div>
   <div class="preview-img-area"><canvas id="previewCanvas"></canvas></div>
   <div class="filters-wrap">
     <button class="filter-pill active" onclick="applyFilter('auto')" id="f-auto">✦ Auto</button>
@@ -233,8 +220,16 @@ input[type=file]{display:none;}
     <button class="filter-pill" onclick="applyFilter('contrast')" id="f-contrast">Contrasto</button>
     <button class="filter-pill" onclick="applyFilter('original')" id="f-original">Originale</button>
   </div>
-  <input class="name-input" id="previewName" type="text" placeholder="Nome scontrino (es. Esselunga)">
-  <input class="name-input" id="previewDate" type="date" style="margin-top:0.5rem;">
+  <div class="preview-fields">
+    <select class="field-select" id="previewCategory" onchange="onCategoryChange()">
+      <option value="Pranzo">🍽️ Pranzo</option>
+      <option value="Trasporti">🚌 Trasporti</option>
+      <option value="Parcheggio">🅿️ Parcheggio</option>
+      <option value="Altro">✏️ Altro</option>
+    </select>
+    <input class="field-input" id="previewOther" type="text" placeholder="Descrizione..." style="display:none">
+    <input class="field-input" id="previewDate" type="date">
+  </div>
   <div class="dark-bottom">
     <button class="btn-secondary" onclick="discardAll()">Scarta</button>
     <button class="btn-primary" onclick="saveReceipt()">Salva</button>
@@ -271,10 +266,8 @@ input[type=file]{display:none;}
   <div class="confirm-box">
     <div class="confirm-title">Elimina scontrino</div>
     <div class="confirm-sub">Questa azione non può essere annullata.</div>
-    <div class="confirm-actions">
-      <button class="btn-confirm-del" id="confirmDelBtn">Elimina</button>
-      <button class="btn-confirm-cancel" onclick="closeConfirm()">Annulla</button>
-    </div>
+    <button class="btn-confirm-del" id="confirmDelBtn">Elimina</button>
+    <button class="btn-confirm-cancel" onclick="closeConfirm()">Annulla</button>
   </div>
 </div>
 
@@ -284,42 +277,27 @@ input[type=file]{display:none;}
 
 <script>
 const MONTHS=['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
-let receipts=[],selMonth,selYear,rawImageData=null,croppedImageData=null,pendingDeleteId=null;
+let receipts=[],selMonth,selYear,rawImageData=null,croppedImageData=null,pendingDeleteId=null,db=null;
 
-// Generate app icon via canvas
+// App icon
 (function(){
   const c=document.createElement('canvas');c.width=180;c.height=180;
   const ctx=c.getContext('2d');
-  // Background
-  const g=ctx.createLinearGradient(0,0,180,180);
-  g.addColorStop(0,'#F47C20');g.addColorStop(1,'#C8380A');
-  ctx.fillStyle=g;
-  ctx.beginPath();ctx.roundRect(0,0,180,180,36);ctx.fill();
-  // Receipt shape
+  const g=ctx.createLinearGradient(0,0,180,180);g.addColorStop(0,'#F47C20');g.addColorStop(1,'#C8380A');
+  ctx.fillStyle=g;ctx.beginPath();ctx.roundRect(0,0,180,180,36);ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,0.95)';ctx.beginPath();ctx.roundRect(44,24,92,120,8);ctx.fill();
   ctx.fillStyle='rgba(255,255,255,0.95)';
-  ctx.beginPath();ctx.roundRect(44,24,92,120,8);ctx.fill();
-  // Zigzag bottom
-  ctx.fillStyle='rgba(255,255,255,0.95)';
-  const zy=144,zw=8;
-  for(let x=44;x<136;x+=zw*2){
-    ctx.beginPath();ctx.moveTo(x,zy);ctx.lineTo(x+zw,zy+10);ctx.lineTo(x+zw*2,zy);ctx.closePath();ctx.fill();
-  }
-  // Lines on receipt
+  for(let x=44;x<136;x+=16){ctx.beginPath();ctx.moveTo(x,144);ctx.lineTo(x+8,154);ctx.lineTo(x+16,144);ctx.closePath();ctx.fill();}
   ctx.fillStyle='rgba(200,90,10,0.25)';
-  [[54,44,72,6],[54,58,84,6],[54,72,60,6],[54,86,78,6],[54,100,50,6]].forEach(([x,y,w,h])=>{
-    ctx.beginPath();ctx.roundRect(x,y,w,h,3);ctx.fill();
-  });
-  // Camera icon overlay
-  ctx.fillStyle='rgba(255,255,255,0.0)';
+  [[54,44,72,6],[54,58,84,6],[54,72,60,6],[54,86,78,6],[54,100,50,6]].forEach(([x,y,w,h])=>{ctx.beginPath();ctx.roundRect(x,y,w,h,3);ctx.fill();});
   document.getElementById('appIcon').href=c.toDataURL('image/png');
 })();
 
-// IndexedDB storage (più persistente di localStorage su iOS)
-let db=null;
+// IndexedDB
 function openDB(){
   return new Promise((res,rej)=>{
     const req=indexedDB.open('scontriniDB',1);
-    req.onupgradeneeded=e=>{e.target.result.createObjectStore('data');};
+    req.onupgradeneeded=e=>e.target.result.createObjectStore('data');
     req.onsuccess=e=>{db=e.target.result;res(db);};
     req.onerror=rej;
   });
@@ -334,10 +312,7 @@ function load(){
     if(!db){res();return;}
     const tx=db.transaction('data','readonly');
     const req=tx.objectStore('data').get('receipts');
-    req.onsuccess=e=>{
-      try{if(e.target.result)receipts=JSON.parse(e.target.result);}catch(err){receipts=[];}
-      res();
-    };
+    req.onsuccess=e=>{try{if(e.target.result)receipts=JSON.parse(e.target.result);}catch(e){receipts=[];}res();};
     req.onerror=()=>res();
   });
 }
@@ -364,113 +339,185 @@ function initMonthSel(){
   sel.addEventListener('change',()=>{const[y,m]=sel.value.split('-').map(Number);selYear=y;selMonth=m;render();});
 }
 
-// File inputs
 document.getElementById('fileCam').addEventListener('change',function(){handleFile(this.files);this.value='';});
 document.getElementById('fileImport').addEventListener('change',function(){handleFile(this.files);this.value='';});
 
 function handleFile(files){
   if(!files||!files.length)return;
   const file=files[0];
-  if(file.type==='application/pdf'){
-    handlePDF(file);
-  } else {
-    const r=new FileReader();
-    r.onload=e=>{rawImageData=e.target.result;openCrop(rawImageData);};
-    r.readAsDataURL(file);
-  }
+  if(file.type==='application/pdf'){handlePDF(file);}
+  else{const r=new FileReader();r.onload=e=>{rawImageData=e.target.result;openCrop(rawImageData);};r.readAsDataURL(file);}
 }
-
 async function handlePDF(file){
   showToast('Caricamento PDF…');
   try{
     pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    const arrayBuffer=await file.arrayBuffer();
-    const pdf=await pdfjsLib.getDocument({data:arrayBuffer}).promise;
+    const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise;
     const page=await pdf.getPage(1);
-    const viewport=page.getViewport({scale:3.0});
-    const canvas=document.createElement('canvas');
-    canvas.width=viewport.width;canvas.height=viewport.height;
-    await page.render({canvasContext:canvas.getContext('2d'),viewport}).promise;
-    rawImageData=canvas.toDataURL('image/jpeg',0.97);
+    const vp=page.getViewport({scale:3.0});
+    const c=document.createElement('canvas');c.width=vp.width;c.height=vp.height;
+    await page.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;
+    rawImageData=c.toDataURL('image/jpeg',0.97);
     openCrop(rawImageData);
   }catch(e){showToast('Errore lettura PDF');}
 }
 
-// CROP
-let cs={x:0,y:0,w:0,h:0,iw:0,ih:0,scale:1,offX:0,offY:0},dragMode=null,dragStart={};
+// ── PERSPECTIVE CROP ──────────────────────────────────────
+let corners={tl:{x:0,y:0},tr:{x:0,y:0},br:{x:0,y:0},bl:{x:0,y:0}};
+let imgOff={x:0,y:0},imgScale=1,imgNatW=0,imgNatH=0;
 
-function autoDetectCrop(imgEl,dw,dh){
+function autoDetect(imgEl,dw,dh){
   const sw=Math.min(imgEl.naturalWidth,600),sh=Math.round(imgEl.naturalHeight*(sw/imgEl.naturalWidth));
   const c=document.createElement('canvas');c.width=sw;c.height=sh;
   const ctx=c.getContext('2d');ctx.drawImage(imgEl,0,0,sw,sh);
   const data=ctx.getImageData(0,0,sw,sh).data;
-  let total=0;for(let i=0;i<data.length;i+=4)total+=(data[i]+data[i+1]+data[i+2])/3;
-  const thresh=Math.min(total/(sw*sh)*0.85,230);
-  let minX=sw,maxX=0,minY=sh,maxY=0,found=false;
+  let tot=0;for(let i=0;i<data.length;i+=4)tot+=(data[i]+data[i+1]+data[i+2])/3;
+  const thr=Math.min(tot/(sw*sh)*0.85,230);
+  let mnX=sw,mxX=0,mnY=sh,mxY=0,found=false;
   for(let y=0;y<sh;y++)for(let x=0;x<sw;x++){
-    const i=(y*sw+x)*4,bright=(data[i]+data[i+1]+data[i+2])/3;
-    if(bright<thresh){found=true;if(x<minX)minX=x;if(x>maxX)maxX=x;if(y<minY)minY=y;if(y>maxY)maxY=y;}
+    const i=(y*sw+x)*4,b=(data[i]+data[i+1]+data[i+2])/3;
+    if(b<thr){found=true;if(x<mnX)mnX=x;if(x>mxX)mxX=x;if(y<mnY)mnY=y;if(y>mxY)mxY=y;}
   }
-  if(!found||maxX-minX<sw*0.1||maxY-minY<sh*0.1)return{x:0,y:0,w:dw,h:dh};
-  const pad=12,ratio=dw/sw;
-  return{x:Math.max(0,(minX-pad)*ratio),y:Math.max(0,(minY-pad)*ratio),w:Math.min(dw,(maxX-minX+pad*2)*ratio),h:Math.min(dh,(maxY-minY+pad*2)*ratio)};
+  if(!found||mxX-mnX<sw*0.1||mxY-mnY<sh*0.1)return{x:0,y:0,w:dw,h:dh};
+  const p=12,r=dw/sw;
+  return{x:Math.max(0,(mnX-p)*r),y:Math.max(0,(mnY-p)*r),w:Math.min(dw,(mxX-mnX+p*2)*r),h:Math.min(dh,(mxY-mnY+p*2)*r)};
 }
 
 function openCrop(dataUrl){
   const img=document.getElementById('cropImg');
   img.onload=()=>{
-    const area=document.getElementById('cropArea'),ar=area.getBoundingClientRect();
-    const iw=img.naturalWidth,ih=img.naturalHeight;
-    const scale=Math.min((ar.width-32)/iw,(ar.height||500)/ih,1);
-    const dw=iw*scale,dh=ih*scale;
+    const area=document.getElementById('cropArea');
+    const ar=area.getBoundingClientRect();
+    imgNatW=img.naturalWidth;imgNatH=img.naturalHeight;
+    imgScale=Math.min((ar.width-32)/imgNatW,(ar.height||500)/imgNatH,1);
+    const dw=imgNatW*imgScale,dh=imgNatH*imgScale;
     img.style.width=dw+'px';img.style.height=dh+'px';
-    const offX=(ar.width-dw)/2,offY=(ar.height-dh)/2;
-    const auto=autoDetectCrop(img,dw,dh);
-    cs={x:auto.x,y:auto.y,w:auto.w,h:auto.h,iw:dw,ih:dh,scale,offX,offY};
-    updateCropBox();
+    imgOff.x=(ar.width-dw)/2;imgOff.y=(ar.height-dh)/2;
+    const a=autoDetect(img,dw,dh);
+    corners={
+      tl:{x:imgOff.x+a.x,           y:imgOff.y+a.y},
+      tr:{x:imgOff.x+a.x+a.w,       y:imgOff.y+a.y},
+      br:{x:imgOff.x+a.x+a.w,       y:imgOff.y+a.y+a.h},
+      bl:{x:imgOff.x+a.x,           y:imgOff.y+a.y+a.h}
+    };
+    updatePoly();setupCornerDrag();
   };
   img.src=dataUrl;
   showPage('pageCrop');
-  setupCropDrag();
 }
-function updateCropBox(){
-  const b=document.getElementById('cropBox');
-  b.style.cssText=`left:${cs.offX+cs.x}px;top:${cs.offY+cs.y}px;width:${cs.w}px;height:${cs.h}px;`;
+
+function updatePoly(){
+  const{tl,tr,br,bl}=corners;
+  document.getElementById('cropPoly').setAttribute('points',
+    `${tl.x},${tl.y} ${tr.x},${tr.y} ${br.x},${br.y} ${bl.x},${bl.y}`);
+  ['tl','tr','br','bl'].forEach(k=>{
+    const h=document.getElementById('ch-'+k);
+    h.style.left=corners[k].x+'px';
+    h.style.top=corners[k].y+'px';
+  });
 }
-function setupCropDrag(){
-  const box=document.getElementById('cropBox'),area=document.getElementById('cropArea'),min=40;
-  function pos(e){const t=e.touches?e.touches[0]:e,r=area.getBoundingClientRect();return{x:t.clientX-r.left-cs.offX,y:t.clientY-r.top-cs.offY};}
-  function start(e){e.preventDefault();const p=pos(e),h=e.target.dataset.h;if(h)dragMode='h-'+h;else if(box.contains(e.target))dragMode='move';else return;dragStart={p,...cs};}
-  function move(e){if(!dragMode)return;e.preventDefault();const p=pos(e),dx=p.x-dragStart.p.x,dy=p.y-dragStart.p.y;let{x,y,w,h}=dragStart;
-    if(dragMode==='move'){x=Math.max(0,Math.min(cs.iw-w,x+dx));y=Math.max(0,Math.min(cs.ih-h,y+dy));}
-    else{const hd=dragMode.split('-')[1];
-      if(hd==='tl'){x=Math.min(x+w-min,x+dx);y=Math.min(y+h-min,y+dy);w=dragStart.x+dragStart.w-x;h=dragStart.y+dragStart.h-y;}
-      else if(hd==='tr'){w=Math.max(min,w+dx);y=Math.min(y+h-min,y+dy);h=dragStart.y+dragStart.h-y;}
-      else if(hd==='bl'){x=Math.min(x+w-min,x+dx);w=dragStart.x+dragStart.w-x;h=Math.max(min,h+dy);}
-      else if(hd==='br'){w=Math.max(min,w+dx);h=Math.max(min,h+dy);}
-      x=Math.max(0,x);y=Math.max(0,y);w=Math.min(cs.iw-x,w);h=Math.min(cs.ih-y,h);
-    }
-    cs={...cs,x,y,w,h};updateCropBox();}
-  function end(){dragMode=null;}
-  box.addEventListener('mousedown',start);box.addEventListener('touchstart',start,{passive:false});
-  document.addEventListener('mousemove',move);document.addEventListener('touchmove',move,{passive:false});
-  document.addEventListener('mouseup',end);document.addEventListener('touchend',end);
+
+function setupCornerDrag(){
+  const area=document.getElementById('cropArea');
+  let active=null;
+  function getPos(e){
+    const t=e.touches?e.touches[0]:e;
+    const r=area.getBoundingClientRect();
+    return{x:t.clientX-r.left,y:t.clientY-r.top};
+  }
+  ['tl','tr','br','bl'].forEach(k=>{
+    const h=document.getElementById('ch-'+k);
+    function start(e){e.preventDefault();e.stopPropagation();active=k;}
+    h.addEventListener('mousedown',start);
+    h.addEventListener('touchstart',start,{passive:false});
+  });
+  function move(e){
+    if(!active)return;e.preventDefault();
+    const p=getPos(e);
+    const ar=area.getBoundingClientRect();
+    corners[active]={
+      x:Math.max(0,Math.min(ar.width,p.x)),
+      y:Math.max(0,Math.min(ar.height,p.y))
+    };
+    updatePoly();
+  }
+  function end(){active=null;}
+  document.addEventListener('mousemove',move);
+  document.addEventListener('touchmove',move,{passive:false});
+  document.addEventListener('mouseup',end);
+  document.addEventListener('touchend',end);
 }
+
+function warpPerspective(srcImg,c,outW,outH){
+  // c = {tl,tr,br,bl} in display coords relative to image offset
+  const{tl,tr,br,bl}=c;
+  // Convert to natural image coords
+  const s=imgScale;
+  const pts={
+    tl:{x:(tl.x-imgOff.x)/s,y:(tl.y-imgOff.y)/s},
+    tr:{x:(tr.x-imgOff.x)/s,y:(tr.y-imgOff.y)/s},
+    br:{x:(br.x-imgOff.x)/s,y:(br.y-imgOff.y)/s},
+    bl:{x:(bl.x-imgOff.x)/s,y:(bl.y-imgOff.y)/s}
+  };
+  const dst=document.createElement('canvas');
+  dst.width=outW;dst.height=outH;
+  const ctx=dst.getContext('2d');
+  const STRIPS=Math.min(outH,600);
+  for(let i=0;i<STRIPS;i++){
+    const t0=i/STRIPS,t1=(i+1)/STRIPS;
+    const slx=pts.tl.x+(pts.bl.x-pts.tl.x)*t0;
+    const sly=pts.tl.y+(pts.bl.y-pts.tl.y)*t0;
+    const srx=pts.tr.x+(pts.br.x-pts.tr.x)*t0;
+    const sry=pts.tr.y+(pts.br.y-pts.tr.y)*t0;
+    const lineLen=Math.hypot(srx-slx,sry-sly);
+    if(lineLen<1)continue;
+    const angle=Math.atan2(sry-sly,srx-slx);
+    const cos=Math.cos(angle),sin=Math.sin(angle);
+    const scaleX=outW/lineLen;
+    const destY=t0*outH,destH=outH/STRIPS+0.5;
+    const a=scaleX*cos,b=-sin,cc=scaleX*sin,d=cos;
+    const e=-scaleX*(cos*slx+sin*sly);
+    const f=destY+sin*slx-cos*sly;
+    ctx.save();
+    ctx.beginPath();ctx.rect(0,destY,outW,destH);ctx.clip();
+    ctx.setTransform(a,b,cc,d,e,f);
+    ctx.drawImage(srcImg,0,0);
+    ctx.restore();
+  }
+  return dst;
+}
+
 function doCrop(){
   const img=document.getElementById('cropImg');
-  const full=document.createElement('canvas');
-  full.width=img.naturalWidth;full.height=img.naturalHeight;
-  full.getContext('2d').drawImage(img,0,0);
-  const sx=cs.x/cs.scale,sy=cs.y/cs.scale,sw=cs.w/cs.scale,sh=cs.h/cs.scale;
-  const c=document.createElement('canvas');c.width=sw;c.height=sh;
-  c.getContext('2d').drawImage(full,sx,sy,sw,sh,0,0,sw,sh);
-  croppedImageData=c.toDataURL('image/jpeg',0.97);
+  // Calculate output size from corner distances
+  const{tl,tr,br,bl}=corners;
+  const topW=Math.hypot(tr.x-tl.x,tr.y-tl.y)/imgScale;
+  const botW=Math.hypot(br.x-bl.x,br.y-bl.y)/imgScale;
+  const lefH=Math.hypot(bl.x-tl.x,bl.y-tl.y)/imgScale;
+  const rigH=Math.hypot(br.x-tr.x,br.y-tr.y)/imgScale;
+  const outW=Math.round((topW+botW)/2);
+  const outH=Math.round((lefH+rigH)/2);
+  const warped=warpPerspective(img,corners,outW,outH);
+  croppedImageData=warped.toDataURL('image/jpeg',0.97);
   showPage('pagePreview');openPreview(croppedImageData);
 }
 function skipCrop(){croppedImageData=rawImageData;showPage('pagePreview');openPreview(croppedImageData);}
 function goBackToCrop(){showPage('pageCrop');}
 
-// PREVIEW
+// ── PREVIEW ───────────────────────────────────────────────
+function onCategoryChange(){
+  const v=document.getElementById('previewCategory').value;
+  document.getElementById('previewOther').style.display=v==='Altro'?'block':'none';
+}
+function openPreview(dataUrl){
+  document.querySelectorAll('.filter-pill').forEach(b=>b.classList.remove('active'));
+  document.getElementById('f-auto').classList.add('active');
+  document.getElementById('previewCategory').value='Pranzo';
+  document.getElementById('previewOther').style.display='none';
+  document.getElementById('previewOther').value='';
+  document.getElementById('previewDate').value=new Date().toISOString().split('T')[0];
+  const img=new Image();img.onload=()=>renderFilter(img,'auto');img.src=dataUrl;
+}
 function sharpen(ctx,w,h){
   const src=ctx.getImageData(0,0,w,h),dst=ctx.createImageData(w,h);
   const s=src.data,d=dst.data,k=[-1,-1,-1,-1,9,-1,-1,-1,-1];
@@ -481,20 +528,10 @@ function sharpen(ctx,w,h){
   }
   ctx.putImageData(dst,0,0);
 }
-function openPreview(dataUrl){
-  document.querySelectorAll('.filter-pill').forEach(b=>b.classList.remove('active'));
-  document.getElementById('f-auto').classList.add('active');
-  document.getElementById('previewName').value='';
-  // Set today as default date
-  const now=new Date();
-  const iso=now.toISOString().split('T')[0];
-  document.getElementById('previewDate').value=iso;
-  const img=new Image();img.onload=()=>renderFilter(img,'auto');img.src=dataUrl;
-}
 function renderFilter(imgOrNull,filter){
   const canvas=document.getElementById('previewCanvas');
   const doRender=image=>{
-    const mw=window.innerWidth-32,mh=window.innerHeight*0.52;
+    const mw=window.innerWidth-32,mh=window.innerHeight*0.48;
     const sc=Math.min(mw/image.naturalWidth,mh/image.naturalHeight,1);
     canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;
     canvas.style.width=Math.round(image.naturalWidth*sc)+'px';
@@ -523,48 +560,37 @@ function discardAll(){
   ['pageCrop','pagePreview'].forEach(id=>document.getElementById(id).classList.add('slide-up'));
   rawImageData=null;croppedImageData=null;
 }
-function saveReceipt(){
+async function saveReceipt(){
   const canvas=document.getElementById('previewCanvas');
-  const name=document.getElementById('previewName').value.trim()||'Scontrino';
+  const cat=document.getElementById('previewCategory').value;
+  const name=cat==='Altro'?(document.getElementById('previewOther').value.trim()||'Altro'):cat;
   const dateVal=document.getElementById('previewDate').value;
-  const ts=dateVal ? new Date(dateVal).getTime() : Date.now();
+  const ts=dateVal?new Date(dateVal).getTime():Date.now();
   const dateObj=new Date(dateVal||Date.now());
-  const month=dateObj.getMonth(), year=dateObj.getFullYear();
   const imgData=canvas.toDataURL('image/jpeg',0.98);
-
-  // Auto-download JPG to iPhone Files
-  const a=document.createElement('a');
   const safeName=name.replace(/[^a-zA-Z0-9]/g,'_');
   const dateStr=dateVal||new Date().toISOString().split('T')[0];
-  a.href=imgData;
-  a.download=`scontrino_${safeName}_${dateStr}.jpg`;
-  a.click();
 
-  receipts.push({id:Date.now()+Math.random(),data:imgData,name,ts,month,year,imgW:canvas.width,imgH:canvas.height});
+  // iOS Share Sheet
+  try{
+    const res=await fetch(imgData);
+    const blob=await res.blob();
+    const file=new File([blob],`scontrino_${safeName}_${dateStr}.jpg`,{type:'image/jpeg'});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      await navigator.share({files:[file],title:`Scontrino ${name}`});
+    } else {
+      const a=document.createElement('a');a.href=imgData;a.download=`scontrino_${safeName}_${dateStr}.jpg`;a.click();
+    }
+  }catch(e){}
+
+  receipts.push({id:Date.now()+Math.random(),data:imgData,name,ts,month:dateObj.getMonth(),year:dateObj.getFullYear(),imgW:canvas.width,imgH:canvas.height});
   save();
   ['pageCrop','pagePreview'].forEach(id=>document.getElementById(id).classList.add('slide-up'));
   rawImageData=null;croppedImageData=null;
-  render();showToast('✓ Salvato e scaricato');
+  render();showToast('✓ Scontrino salvato');
 }
 
-// CONFIRM DELETE
-function askDelete(id){
-  pendingDeleteId=id;
-  document.getElementById('confirmOverlay').classList.add('active');
-}
-function closeConfirm(){
-  pendingDeleteId=null;
-  document.getElementById('confirmOverlay').classList.remove('active');
-}
-document.getElementById('confirmDelBtn').onclick=function(){
-  if(pendingDeleteId!=null){
-    receipts=receipts.filter(r=>r.id!==pendingDeleteId);
-    save();render();showToast('Scontrino eliminato');
-  }
-  closeConfirm();
-};
-
-// RENDER
+// ── RENDER ────────────────────────────────────────────────
 function filtered(){return receipts.filter(r=>r.month===selMonth&&r.year===selYear).sort((a,b)=>a.ts-b.ts);}
 function render(){
   const list=filtered();
@@ -589,8 +615,14 @@ function render(){
     c.appendChild(card);
   });
 }
+function askDelete(id){pendingDeleteId=id;document.getElementById('confirmOverlay').classList.add('active');}
+function closeConfirm(){pendingDeleteId=null;document.getElementById('confirmOverlay').classList.remove('active');}
+document.getElementById('confirmDelBtn').onclick=function(){
+  if(pendingDeleteId!=null){receipts=receipts.filter(r=>r.id!==pendingDeleteId);save();render();showToast('Scontrino eliminato');}
+  closeConfirm();
+};
 
-// EXPORT
+// ── EXPORT ────────────────────────────────────────────────
 function openExport(){
   const list=filtered();if(!list.length)return;
   const mn=`${MONTHS[selMonth]} ${selYear}`;
