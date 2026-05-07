@@ -314,8 +314,33 @@ let receipts=[],selMonth,selYear,rawImageData=null,croppedImageData=null,pending
   document.getElementById('appIcon').href=c.toDataURL('image/png');
 })();
 
-function save(){try{localStorage.setItem('scontrini',JSON.stringify(receipts));}catch(e){}}
-function load(){try{const d=localStorage.getItem('scontrini');if(d)receipts=JSON.parse(d);}catch(e){receipts=[];}}
+// IndexedDB storage (più persistente di localStorage su iOS)
+let db=null;
+function openDB(){
+  return new Promise((res,rej)=>{
+    const req=indexedDB.open('scontriniDB',1);
+    req.onupgradeneeded=e=>{e.target.result.createObjectStore('data');};
+    req.onsuccess=e=>{db=e.target.result;res(db);};
+    req.onerror=rej;
+  });
+}
+function save(){
+  if(!db)return;
+  const tx=db.transaction('data','readwrite');
+  tx.objectStore('data').put(JSON.stringify(receipts),'receipts');
+}
+function load(){
+  return new Promise(res=>{
+    if(!db){res();return;}
+    const tx=db.transaction('data','readonly');
+    const req=tx.objectStore('data').get('receipts');
+    req.onsuccess=e=>{
+      try{if(e.target.result)receipts=JSON.parse(e.target.result);}catch(err){receipts=[];}
+      res();
+    };
+    req.onerror=()=>res();
+  });
+}
 
 function showPage(id){
   document.querySelectorAll('.page').forEach(p=>{
@@ -620,7 +645,7 @@ function openFullscreen(id){
 }
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
 
-load();initMonthSel();render();
+openDB().then(()=>load().then(()=>{initMonthSel();render();}));
 </script>
 </body>
 </html>
