@@ -279,17 +279,27 @@ input[type=file]{display:none;}
 const MONTHS=['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
 let receipts=[],selMonth,selYear,rawImageData=null,croppedImageData=null,pendingDeleteId=null,db=null;
 
-// App icon
+// App icon - 4 quadrants + white S
 (function(){
   const c=document.createElement('canvas');c.width=180;c.height=180;
   const ctx=c.getContext('2d');
-  const g=ctx.createLinearGradient(0,0,180,180);g.addColorStop(0,'#F47C20');g.addColorStop(1,'#C8380A');
-  ctx.fillStyle=g;ctx.beginPath();ctx.roundRect(0,0,180,180,36);ctx.fill();
-  ctx.fillStyle='rgba(255,255,255,0.95)';ctx.beginPath();ctx.roundRect(44,24,92,120,8);ctx.fill();
-  ctx.fillStyle='rgba(255,255,255,0.95)';
-  for(let x=44;x<136;x+=16){ctx.beginPath();ctx.moveTo(x,144);ctx.lineTo(x+8,154);ctx.lineTo(x+16,144);ctx.closePath();ctx.fill();}
-  ctx.fillStyle='rgba(200,90,10,0.25)';
-  [[54,44,72,6],[54,58,84,6],[54,72,60,6],[54,86,78,6],[54,100,50,6]].forEach(([x,y,w,h])=>{ctx.beginPath();ctx.roundRect(x,y,w,h,3);ctx.fill();});
+  // White background with rounded rect
+  ctx.fillStyle='#fff';
+  ctx.beginPath();ctx.roundRect(0,0,180,180,32);ctx.fill();
+  // 4 colored quadrants (clipped to rounded rect)
+  ctx.save();ctx.beginPath();ctx.roundRect(0,0,180,180,32);ctx.clip();
+  const quads=[[0,0,'#E8500A'],[90,0,'#4A90D9'],[0,90,'#34C759'],[90,90,'#F4B820']];
+  quads.forEach(([x,y,col])=>{ctx.fillStyle=col;ctx.fillRect(x,y,90,90);});
+  ctx.restore();
+  // White border outline
+  ctx.strokeStyle='#fff';ctx.lineWidth=8;
+  ctx.beginPath();ctx.roundRect(4,4,172,172,28);ctx.stroke();
+  // White S letter
+  ctx.fillStyle='#fff';
+  ctx.font='bold 130px -apple-system,BlinkMacSystemFont,sans-serif';
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.shadowColor='rgba(0,0,0,0.2)';ctx.shadowBlur=8;
+  ctx.fillText('S',90,97);
   document.getElementById('appIcon').href=c.toDataURL('image/png');
 })();
 
