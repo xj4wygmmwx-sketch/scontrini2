@@ -261,6 +261,16 @@ input[type=file]{display:none;}
   <button class="fs-close" onclick="closePage('pageFullscreen')">✕</button>
 </div>
 
+<!-- CONFIRM SAVE -->
+<div class="confirm-overlay" id="confirmSaveOverlay">
+  <div class="confirm-box">
+    <div class="confirm-title">Salva scontrino</div>
+    <div class="confirm-sub">Vuoi salvare questo scontrino?</div>
+    <button class="btn-primary" id="confirmSaveBtn" style="width:100%;margin-bottom:10px;">Salva</button>
+    <button class="btn-confirm-cancel" onclick="closeSaveConfirm()">Annulla</button>
+  </div>
+</div>
+
 <!-- CONFIRM DELETE -->
 <div class="confirm-overlay" id="confirmOverlay">
   <div class="confirm-box">
@@ -570,7 +580,14 @@ function discardAll(){
   ['pageCrop','pagePreview'].forEach(id=>document.getElementById(id).classList.add('slide-up'));
   rawImageData=null;croppedImageData=null;
 }
+function closeSaveConfirm(){document.getElementById('confirmSaveOverlay').classList.remove('active');}
+
 async function saveReceipt(){
+  document.getElementById('confirmSaveOverlay').classList.add('active');
+}
+
+document.getElementById('confirmSaveBtn').onclick=async function(){
+  closeSaveConfirm();
   const canvas=document.getElementById('previewCanvas');
   const cat=document.getElementById('previewCategory').value;
   const name=cat==='Altro'?(document.getElementById('previewOther').value.trim()||'Altro'):cat;
@@ -598,7 +615,7 @@ async function saveReceipt(){
   ['pageCrop','pagePreview'].forEach(id=>document.getElementById(id).classList.add('slide-up'));
   rawImageData=null;croppedImageData=null;
   render();showToast('✓ Scontrino salvato');
-}
+};
 
 // ── RENDER ────────────────────────────────────────────────
 function filtered(){return receipts.filter(r=>r.month===selMonth&&r.year===selYear).sort((a,b)=>a.ts-b.ts);}
