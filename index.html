@@ -233,6 +233,7 @@ input[type=file]{display:none;}
     <button class="filter-pill" onclick="applyFilter('original')" id="f-original">Originale</button>
   </div>
   <input class="name-input" id="previewName" type="text" placeholder="Nome scontrino (es. Esselunga)">
+  <input class="name-input" id="previewDate" type="date" style="margin-top:0.5rem;">
   <div class="dark-bottom">
     <button class="btn-secondary" onclick="discardAll()">Scarta</button>
     <button class="btn-primary" onclick="saveReceipt()">Salva</button>
@@ -458,6 +459,10 @@ function openPreview(dataUrl){
   document.querySelectorAll('.filter-pill').forEach(b=>b.classList.remove('active'));
   document.getElementById('f-auto').classList.add('active');
   document.getElementById('previewName').value='';
+  // Set today as default date
+  const now=new Date();
+  const iso=now.toISOString().split('T')[0];
+  document.getElementById('previewDate').value=iso;
   const img=new Image();img.onload=()=>renderFilter(img,'auto');img.src=dataUrl;
 }
 function renderFilter(imgOrNull,filter){
@@ -495,11 +500,25 @@ function discardAll(){
 function saveReceipt(){
   const canvas=document.getElementById('previewCanvas');
   const name=document.getElementById('previewName').value.trim()||'Scontrino';
-  receipts.push({id:Date.now()+Math.random(),data:canvas.toDataURL('image/jpeg',0.98),name,ts:Date.now(),month:new Date().getMonth(),year:new Date().getFullYear(),imgW:canvas.width,imgH:canvas.height});
+  const dateVal=document.getElementById('previewDate').value;
+  const ts=dateVal ? new Date(dateVal).getTime() : Date.now();
+  const dateObj=new Date(dateVal||Date.now());
+  const month=dateObj.getMonth(), year=dateObj.getFullYear();
+  const imgData=canvas.toDataURL('image/jpeg',0.98);
+
+  // Auto-download JPG to iPhone Files
+  const a=document.createElement('a');
+  const safeName=name.replace(/[^a-zA-Z0-9]/g,'_');
+  const dateStr=dateVal||new Date().toISOString().split('T')[0];
+  a.href=imgData;
+  a.download=`scontrino_${safeName}_${dateStr}.jpg`;
+  a.click();
+
+  receipts.push({id:Date.now()+Math.random(),data:imgData,name,ts,month,year,imgW:canvas.width,imgH:canvas.height});
   save();
   ['pageCrop','pagePreview'].forEach(id=>document.getElementById(id).classList.add('slide-up'));
   rawImageData=null;croppedImageData=null;
-  render();showToast('✓ Scontrino salvato');
+  render();showToast('✓ Salvato e scaricato');
 }
 
 // CONFIRM DELETE
